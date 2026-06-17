@@ -1,0 +1,60 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile containing localized weather preferences, push indicators, and synchronized route parameters.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "language": { "type": "string", "enum": ["vi", "en"] },
+        "theme": { "type": "string", "enum": ["dark", "light"] },
+        "preferredActivities": {
+          "type": "array"
+        },
+        "transportMode": {
+          "type": "string"
+        },
+        "tempTolerance": {
+          "type": "string"
+        },
+        "uvTolerance": {
+          "type": "string"
+        },
+        "pushAlertsEnabled": {
+          "type": "boolean"
+        },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "email"]
+    },
+    "FavoriteItinerary": {
+      "title": "FavoriteItinerary",
+      "description": "User's high-comfort saved meteorological travel calendars",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "date": { "type": "string" },
+        "locationName": { "type": "string" },
+        "summary": { "type": "string" },
+        "items": { "type": "array" },
+        "transportMode": { "type": "string" },
+        "suitabilityScore": { "type": "number", "description": "Compatibility of the travel route under the weather, e.g., percentage" },
+        "userRating": { "type": "integer", "description": "User feedback rating from 1 to 5 stars" },
+        "savedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "locationName", "items", "savedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Secure space containing weather planning presets"
+    },
+    "/users/{userId}/favorites/{favoriteId}": {
+      "schema": "FavoriteItinerary",
+      "description": "Subcollection containing favorited travel schedules"
+    }
+  }
+}
