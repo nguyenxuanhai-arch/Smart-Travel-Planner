@@ -1,8 +1,42 @@
+# Thư mục chứa thư viện nặng 
 node_modules/
-build/
+
+# Thư mục build đầu ra tạm thời (Generated do webpack/vite/esbuild tạo ra)
 dist/
-coverage/
-.DS_Store
+build/
+out/
+
+# Các file log lỗi cục bộ của hệ thống
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TỆP TIN BIẾN MÔI TRƯỜNG CHỨA KHÓA BẢO MẬT 
 .env*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ngoại lệ: Cho phép đẩy file mẫu lên để người khác xem cấu hình cần thiết
 !.env.example
+
+# File cấu hình Firebase kết nối cục bộ riêng tư
+src/firebase-applet-config.json
+firebase-applet-config.json
+
+# Khóa tài khoản dịch vụ bí mật của Google Cloud (IAM Service Account Key)
+# (Chú ý: Nếu bạn có download bất kỳ JSON key nào từ GCP IAM về máy để dev, hãy loại bỏ nó)
+*-credentials.json
+*key*.json
+credential*/
+
+# Hệ điều hành tự động tạo ra gây rác mã nguồn
+.DS_Store
+Thumbs.db
+
+# Các công cụ kiểm tra độ bao phủ mã (Coverage) hoặc IDE Cục bộ
+coverage/
+.vscode/
+.idea/
