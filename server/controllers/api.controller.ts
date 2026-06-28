@@ -16,7 +16,7 @@ export const getGeocode = async (req: Request, res: Response) => {
     const lang = req.query.lang === "vi" ? "vi" : "en";
     const redisKey = `redis:geocode:q:${query.trim().toLowerCase()}:lang:${lang}`;
 
-    const cached = CloudRedisCache.get(redisKey);
+    const cached = await CloudRedisCache.get(redisKey);
     if (cached) {
       res.setHeader("X-Cache", "REDIS_HIT");
       res.json({ ...cached, _fromRedisCache: true });
@@ -24,7 +24,7 @@ export const getGeocode = async (req: Request, res: Response) => {
     }
 
     const data = await fetchGeocode(query, lang);
-    CloudRedisCache.set(redisKey, data, 600);
+    await CloudRedisCache.set(redisKey, data, 600);
     res.setHeader("X-Cache", "REDIS_MISS");
     res.json(data);
   } catch (error: any) {
@@ -46,7 +46,7 @@ export const getWeather = async (req: Request, res: Response) => {
 
     const redisKey = `redis:weather:lat:${latitude.toFixed(4)}:lon:${longitude.toFixed(4)}:name:${normalizedName.toLowerCase().replace(/\s/g, '_')}`;
 
-    const cached = CloudRedisCache.get(redisKey);
+    const cached = await CloudRedisCache.get(redisKey);
     if (cached) {
       res.setHeader("X-Cache", "REDIS_HIT");
       res.json({ ...cached, _fromRedisCache: true });
@@ -54,7 +54,7 @@ export const getWeather = async (req: Request, res: Response) => {
     }
 
     const finalResult = await fetchWeather(latitude, longitude, normalizedName);
-    CloudRedisCache.set(redisKey, finalResult, 300);
+    await CloudRedisCache.set(redisKey, finalResult, 300);
     res.setHeader("X-Cache", "REDIS_MISS");
     res.json(finalResult);
   } catch (error: any) {
@@ -76,7 +76,7 @@ export const getItinerary = async (req: Request, res: Response) => {
     const currentPrefsKey = `${language}:${(preferredActivities || []).join(',')}:${transportMode}:${tempTolerance}:${uvTolerance}`;
     const redisKey = `redis:itinerary:loc:${coordinates.name.toLowerCase().replace(/\s/g, '_')}:prefs:${currentPrefsKey}`;
 
-    const cached = CloudRedisCache.get(redisKey);
+    const cached = await CloudRedisCache.get(redisKey);
     if (cached) {
       res.setHeader("X-Cache", "REDIS_HIT");
       res.json({ ...cached, _fromRedisCache: true });
@@ -204,7 +204,7 @@ export const getItinerary = async (req: Request, res: Response) => {
       finalPlan = generateLocalFallbackItinerary(coordinates, current, daily, preferences);
     }
 
-    CloudRedisCache.set(redisKey, finalPlan, 1800);
+    await CloudRedisCache.set(redisKey, finalPlan, 1800);
     res.setHeader("X-Cache", "REDIS_MISS");
     res.json(finalPlan);
   } catch (error: any) {
@@ -226,7 +226,7 @@ export const analyzeAlerts = async (req: Request, res: Response) => {
     const currentPrefsKey = `${language}:${(preferredActivities || []).join(',')}:${tempTolerance}:${uvTolerance}`;
     const redisKey = `redis:alerts:loc:${coordinates.name.toLowerCase().replace(/\s/g, '_')}:prefs:${currentPrefsKey}`;
 
-    const cached = CloudRedisCache.get(redisKey);
+    const cached = await CloudRedisCache.get(redisKey);
     if (cached) {
       res.setHeader("X-Cache", "REDIS_HIT");
       res.json({ ...cached, _fromRedisCache: true });
@@ -301,7 +301,7 @@ export const analyzeAlerts = async (req: Request, res: Response) => {
       finalAlertContainer = generateLocalFallbackAlerts(weatherData, preferences);
     }
 
-    CloudRedisCache.set(redisKey, finalAlertContainer, 600);
+    await CloudRedisCache.set(redisKey, finalAlertContainer, 600);
     res.setHeader("X-Cache", "REDIS_MISS");
     res.json(finalAlertContainer);
   } catch (error: any) {
@@ -309,11 +309,12 @@ export const analyzeAlerts = async (req: Request, res: Response) => {
   }
 };
 
-export const getRedisStats = (req: Request, res: Response) => {
-  res.json(CloudRedisCache.getMetrics());
+export const getRedisStats = async (req: Request, res: Response) => {
+  const metrics = await CloudRedisCache.getMetrics();
+  res.json(metrics);
 };
 
-export const clearRedis = (req: Request, res: Response) => {
-  CloudRedisCache.clear();
+export const clearRedis = async (req: Request, res: Response) => {
+  await CloudRedisCache.clear();
   res.json({ success: true, message: "Cloud Redis cache flushed successfully." });
 };
