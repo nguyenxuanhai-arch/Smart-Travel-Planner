@@ -48,7 +48,4 @@ jobs:
             --platform=managed \
             --allow-unauthenticated \
             --port=3000 \
-            --network=default \
-            --subnet=default \
-            --vpc-egress=private-ranges-only \
             --update-env-vars=GEMINI_API_KEY="${{ secrets.GEMINI_API_KEY }}",REDIS_HOST="${{ secrets.REDIS_HOST }}",REDIS_PORT="6379",REDIS_TTL_SECONDS="600"
